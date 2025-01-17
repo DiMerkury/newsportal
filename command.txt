@@ -1,0 +1,45 @@
+from django.contrib.auth.models import User
+user1 = User.objects.create_user('Иванов Иван Иванович')
+user2 = User.objects.create_user('Петров Петр Петрович')
+from news_portal.models import *
+author1 = Author.objects.create(user = user1)
+author2 = Author.objects.create(user = user2)
+category1 = Category.objects.create(name_category = 'программирование')
+category2 = Category.objects.create(name_category = 'история')
+category3 = Category.objects.create(name_category = 'железо')
+category4 = Category.objects.create(name_category = 'авто')
+
+post1 = Post.objects.create(type = 'AR', title = 'пост1', text = 'текст первого поста', author = Author.objects.get(pk=1))
+post1.category.add(Category.objects.get(pk=1))
+post2 = Post.objects.create(type = 'AR', title = 'пост2', text = 'текст второго поста поста', author = Au
+thor.objects.get(pk=2))
+post2.category.add(Category.objects.get(pk=1), Category.objects.get(pk=3))
+post3 = Post.objects.create(title = 'новость1', text = 'текст новости', author = Author.objects.get(pk=1))
+post3.category.add(Category.objects.get(pk=1))
+comment1 = Comment.objects.create(text = 'первый комментарий!', post = post1, user = User.objects.get(pk=2))
+comment2 = Comment.objects.create(text = 'первый комментарий!', post = post2, user = User.objects.get(pk=
+2))
+comment3 = Comment.objects.create(text = 'первый комментарий!', post = post3, user = User.objects.get(pk=
+2))
+comment4 = Comment.objects.create(text = 'полезный комментарий!', post = post1, user = User.objects.get(p
+k=1))
+post1.like()
+post1.like()
+post2.like()
+post3.dislike()
+comment4.like()
+comment1.dislike()
+comment1.dislike()
+author1.update_rating()
+author2.update_rating()
+Author.objects.order_by('-rating').values('user__username').first()
+best_post = Post.objects.order_by('-rating').first()
+if best_post:
+    post_data = {
+        'datetime_in': best_post.datetime_in,
+        'author_username': best_post.author.user.username,
+        'rating': best_post.rating,
+        'title': best_post.title,
+        'preview': best_post.preview()
+    }
+best_post.comment_set.all().values('datatime_in', 'user__username', 'rating', 'text')
